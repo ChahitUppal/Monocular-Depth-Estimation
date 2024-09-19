@@ -59,7 +59,7 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 
                 # Display the right elbow angle
                 cv2.putText(frame, f'Right Elbow Angle: {int(right_elbow_angle)}', 
-                            (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+                            (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 3)
             
             # Check visibility for left arm landmarks (shoulder, elbow, wrist)
             if (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].visibility > 0.5 and
@@ -77,7 +77,7 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 
                 # Display the left elbow angle
                 cv2.putText(frame, f'Left Elbow Angle: {int(left_elbow_angle)}', 
-                            (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+                            (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 3)
 
             # Draw the pose landmarks for arms
             mp_drawing.draw_landmarks(
