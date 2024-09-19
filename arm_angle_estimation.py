@@ -43,26 +43,43 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
         if results.pose_landmarks:
             landmarks = results.pose_landmarks.landmark
             
-            # Get coordinates of relevant points for right and left arms
-            right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-                              landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
-            right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
-                           landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
-            right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
-                           landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+            # Check visibility for right arm landmarks (shoulder, elbow, wrist)
+            if (landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].visibility > 0.5 and
+                landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].visibility > 0.5 and
+                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].visibility > 0.5):
+                
+                right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+                                  landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
+                               landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+                right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
+                               landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+                
+                right_elbow_angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
+                
+                # Display the right elbow angle
+                cv2.putText(frame, f'Right Elbow Angle: {int(right_elbow_angle)}', 
+                            (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
             
-            left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
-                             landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-            left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
-                          landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-            left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
-                          landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-            
-            # Calculate elbow angles
-            right_elbow_angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
-            left_elbow_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
-            
-            # Draw pose landmarks for arms only
+            # Check visibility for left arm landmarks (shoulder, elbow, wrist)
+            if (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].visibility > 0.5 and
+                landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].visibility > 0.5 and
+                landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].visibility > 0.5):
+                
+                left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
+                                 landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+                left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
+                              landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+                left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
+                              landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+                
+                left_elbow_angle = calculate_angle(left_shoulder, left_elbow, left_wrist)
+                
+                # Display the left elbow angle
+                cv2.putText(frame, f'Left Elbow Angle: {int(left_elbow_angle)}', 
+                            (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+
+            # Draw the pose landmarks for arms
             mp_drawing.draw_landmarks(
                 frame, 
                 results.pose_landmarks, 
@@ -70,12 +87,6 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2, circle_radius=2),
                 mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
             )
-
-            # Display the calculated elbow angles
-            cv2.putText(frame, f'Right Elbow Angle: {int(right_elbow_angle)}', 
-                        (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
-            cv2.putText(frame, f'Left Elbow Angle: {int(left_elbow_angle)}', 
-                        (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
 
         # Display the output frame
         cv2.imshow('Pose Detection - Elbow Angles', frame)
